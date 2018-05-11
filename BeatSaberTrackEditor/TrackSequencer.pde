@@ -5,12 +5,12 @@ class TrackSequencer extends GUIElement{
   private static final int SOUND_FILE_VALID = 0;
   private static final int SOUND_FILE_OGG = 1;
   private static final int SOUND_FILE_INVALID = 2;
-  
+
   private static final float MAX_GRID_RESOLUTION = 0.25;
   private static final float MIN_GRID_RESOLUTION = 1;
-  
-  Minim minim; 
-  AudioSample sound; 
+
+  Minim minim;
+  AudioSample sound;
   AudioPlayer soundbis;
   private int gridWidth = 24;
   private int gridHeight = 24;
@@ -30,19 +30,19 @@ class TrackSequencer extends GUIElement{
   private int clickPosY = 0;
   private boolean drawSelectBox = false;
   private int mouseButtonIndex = LEFT;
-  
+
   private int trackSamplesOffset = 0;
-  
+
   private float bpm = 90;
-  
+
   private boolean playing = false;
-  
+
   private int currentCutDirection = 8;
-  
+
   private int defaultBeatsPerBar = 8;
   private int beatsPerBar = 8;
   private float gridResolution = 1.0;
-  
+
   public ArrayList<MultiTrack> multiTracks;
   
   TrackSequencer(int x, int y, int w, int h, Minim minim, int gridSize){
@@ -61,28 +61,31 @@ class TrackSequencer extends GUIElement{
     middleTracks    = new MultiTrack(this, numtracksPerMulti, gridWidth, gridHeight, beatsPerBar, "Middle Notes");
     topTracks       = new MultiTrack(this, numtracksPerMulti, gridWidth, gridHeight, beatsPerBar, "Top Notes");
     obstaclesTracks = new MultiTrack(this, numtracksPerMulti, gridWidth, gridHeight, beatsPerBar, "Obstacles");
-    
+
     // Move the track groups
     eventsTracks.setX(   (tracksXOffset + trackGroupSpacing));
     bottomTracks.setX(   (tracksXOffset + trackGroupSpacing * 2) + numEventTracks * gridWidth);
     middleTracks.setX(   (tracksXOffset + numtracksPerMulti * gridWidth    ) + trackGroupSpacing * 3 + numEventTracks * gridWidth);
     topTracks.setX(      (tracksXOffset + numtracksPerMulti * gridWidth * 2) + trackGroupSpacing * 4 + numEventTracks * gridWidth);
     obstaclesTracks.setX((tracksXOffset + numtracksPerMulti * gridWidth * 3) + trackGroupSpacing * 5 + numEventTracks * gridWidth);
-    
+
     multiTracks = new ArrayList<MultiTrack>();
-    
+
     multiTracks.add(eventsTracks);
     multiTracks.add(bottomTracks);
     multiTracks.add(middleTracks);
     multiTracks.add(topTracks);
     multiTracks.add(obstaclesTracks);
-    
-  
+
+
     sound = minim.loadSample(clickPath, 1024);
     soundbis = minim.loadFile(clickPath);
-    
+
   }
-  
+
+  public void setOffset(float offset){
+    waveform.setOffset(offset);
+  }
   // Clear the entire sequence
   public void clearSeq(){
     for(MultiTrack mt : multiTracks){
@@ -91,7 +94,7 @@ class TrackSequencer extends GUIElement{
       }
     }
   }
-  
+
   public int getTypeFromMouseButton(int mb){
     int type = 0;
     switch(mb){
@@ -106,18 +109,18 @@ class TrackSequencer extends GUIElement{
     }
     return type;
   }
-  
+
   public void checkRemoveNote(int mx, int my){
     checkClickedTrack(mx, my, -1);
   }
-  
+
   public void checkClickedTrack(int mx, int my, int type){
-    
+
     this.mouseButtonIndex = type;
-    
+
     //println("checkClickedTrack:" + mx + " " + my);
     for (MultiTrack m : multiTracks){
-      
+
       if(!drawSelectBox){
         if(my < seqWindowBottom){
           if(m.getElementName().equals("Events")){
@@ -137,42 +140,42 @@ class TrackSequencer extends GUIElement{
       }
     }
   }
-  
+
   public void setPlaying(boolean playing){
-    
+
     if(this.playing == playing)
       return;
-     
+
     this.playing = playing;
-    
+
     if(playing)
       waveform.play();
     else
       waveform.pause();
   }
-  
+
   public void stop(){
     this.playing = false;
-    
+
     waveform.stopPlaying();
   }
-  
+
   public boolean getPlaying(){
     return playing;
   }
-  
+
   public void setCutDirection(int cutDirection){
     this.currentCutDirection = cutDirection;
   }
-  
+
   public int getCutDirection(){
     return currentCutDirection;
   }
-  
+
   public int getGridHeight(){
     return gridHeight;
   }
-  
+
   public int getGridWidth(){
     return gridWidth;
   }
@@ -188,81 +191,81 @@ class TrackSequencer extends GUIElement{
   public int timeToGrid(float time){
     return (int)(time * (gridHeight / (beatsPerBar/2)));
   }
-  
+
   public void resetView(){
     this.setY(startYPosition);
   }
-  
+
   public void scrollY(float scroll){
     //println("scrollY:" + scroll);
     if(scroll > 0){
       this.setY((int)(this.getY() + scroll * gridHeight));
-    }else{ 
+    }else{
       //println("startYPosition:" + startYPosition);
       //println("this.getY() - (int)scroll - 1 :" + (this.getY() - (int)scroll - 1 ));
       if(this.getY() + (int)(scroll * gridHeight) - 1 > startYPosition )
         this.setY((int)(this.getY() + scroll * gridHeight));
       else
         this.setY(startYPosition);
-    } 
+    }
   }
-  
+
   public float getBPM(){
     return this.bpm;
   }
-  
+
   public void setBPM(float bpm){
     this.bpm = bpm;
     waveform.setBPM(bpm);
-    
+
     for(MultiTrack mt : multiTracks){
       mt.setBPM(bpm);
     }
-    
+
     waveform.setBeatsPerBar(beatsPerBar);
   }
-  
+
   public void setBeatsPerBar(int beats){
     this.beatsPerBar = beats;
-    
+
     for(MultiTrack mt : multiTracks){
       mt.setBeatsPerBar(beats);
     }
   }
-  
+
   public int getBeatsPerBar(){
     return beatsPerBar;
   }
-  
+
   public void setGridResolution(float resolution){
     this.gridResolution = resolution;
-    
+
     for(MultiTrack mt : multiTracks){
       mt.setGridResolution(resolution);
     }
   }
-  
+
   public float getGridResolution(){
     return gridResolution;
   }
-  
+
   public void loadSoundFile(String path){
     waveform.loadSoundFile(path);
     setBPM(this.bpm);
   }
-  
+
   public void setTrackerPositionSamples(int pos){
-    waveform.setTrackerPositionSamples(pos); 
+    waveform.setTrackerPositionSamples(pos);
   }
-  
+
   public void setTrackerPositionPixels(int pos){
-    waveform.setTrackerPositionPixels((this.getY()) - pos); 
+    waveform.setTrackerPositionPixels((this.getY()) - pos);
   }
-  
+
   public boolean getSnapToggle(){
     return snapToggle;
   }
-  
+
   public void setSnapToggle(boolean snap){
     snapToggle = snap;
     for(MultiTrack m : multiTracks){
@@ -271,25 +274,25 @@ class TrackSequencer extends GUIElement{
       }
     }
   }
-  
+
   public int getAmountScrolled(){
     return amountScrolled = (this.getY() - startYPosition) / defaultGridHeight;
   }
-  
+
   public void startCreateSelection(int mx, int my){
     clickPosX = mx;
     clickPosY = my;
     drawSelectBox = true;
   }
-  
+
   public void stopCreateSelection(int mx, int my, int type){
     if(drawSelectBox){
       int minX = min(mx, clickPosX);
       int minY = min(my, clickPosY);
-      
+
       int maxX = max(mx, clickPosX);
       int maxY = max(my, clickPosY);
-      
+
       int selectionHeight = (maxY - minY);
       int selectionWidth  = (maxX - minX);
       
@@ -311,22 +314,22 @@ class TrackSequencer extends GUIElement{
       drawSelectBox = false;
     }
   }
-  
+
   public void display(){
-    
+
     strokeWeight(2);
-    
+
     for(MultiTrack mt : multiTracks){
       mt.display();
     }
-    
+
     waveform.display();
-    
+
     if(playing){
       if(!waveform.getPlaying())
         playing = false;
     }
-    
+
     // Autoscroll
     // Scroll if the tracker is off screen
     if(playing){
@@ -340,7 +343,7 @@ class TrackSequencer extends GUIElement{
         this.setY(this.getY() - seqWindowBottom);
       }
     }
-    
+
     if(!snapToggle){
       noFill();
       strokeWeight(1);
@@ -350,7 +353,7 @@ class TrackSequencer extends GUIElement{
       line(0, mouseY+widthHalf, width, mouseY+heightHalf);
       line(0, mouseY-widthHalf, width, mouseY-heightHalf);
     }
-    
+
     if(drawSelectBox && mouseButtonIndex >= 0){
       switch(mouseButtonIndex){
         case(1):

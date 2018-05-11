@@ -10,7 +10,7 @@ String versionText = "Megalon v0.0.18-3";
 
 boolean debug = false;
 
-private static final int THEME_COLOR_0 = #ffffff; 
+private static final int THEME_COLOR_0 = #ffffff;
 
 Minim minim;
 TrackSequencer sequencer;
@@ -70,7 +70,7 @@ void setup(){
 
   // Minim must be declared in the main class!
   minim = new Minim(this);
-  
+
   eventLabels = loadImage(eventLabelsImagePath);
   int gridSize = 0;
   if(fullScreen){
@@ -82,14 +82,16 @@ void setup(){
   
   sequencer = new TrackSequencer(0, height + sequencerYOffset, width, -(height + sequencerYOffset), minim, gridSize);
 
+  sequencer = new TrackSequencer(0, height + sequencerYOffset, width, -(height + sequencerYOffset), minim,0);
+
   sequencer.loadSoundFile(soundfilePath);
   sequencer.setBPM(bpm);
-  
+
   helpboxSize = 400;
   helpboxX = width - helpboxSize;
   helpboxY = 120;
 
-  // To set the global colour scheme use 
+  // To set the global colour scheme use
   G4P.setGlobalColorScheme(6);
 
   createFileSystemGUI(width - helpboxSize, 0, helpboxSize, 130, 6);
@@ -114,7 +116,7 @@ void draw(){
   if (!focused){
     resetKeys();
   }
-  
+
   // Check if any of the multitracks are hovered over
   currentHelpText = TextArrays.defaultControlsText;
   for(int i = 0; i < sequencer.multiTracks.size(); ++i){
@@ -137,7 +139,7 @@ void draw(){
       sequencer.multiTracks.get(i).setHighlighted(false);
     }
   }
-  
+
   timeCounter++;
   // Autosave
   // Save every 30 seconds at 60fps
@@ -148,8 +150,8 @@ void draw(){
     else
       tempTrackIndex++;
   }
-  
-  
+
+
   // Redraw background
   background(#111111);
 
@@ -161,10 +163,10 @@ void draw(){
 
   fill(0);
   stroke(0);
-  
+
   // Draw box below sequencer
   rect(0, height + sequencerYOffset, width, -sequencerYOffset);
-  
+
   // sick toothpaste blue #a7dbdb
   fill(BeatSaberTrackEditor.THEME_COLOR_0);
   int seqTextY = height + sequencerYOffset + 25;
@@ -174,12 +176,12 @@ void draw(){
   text("Middle\nNotes", sequencer.multiTracks.get(2).getX(), seqTextY);
   text("Top\nNotes",    sequencer.multiTracks.get(3).getX(), seqTextY);
   text("Obstacles",    sequencer.multiTracks.get(4).getX(), seqTextY);
-  
+
   textSize(12);
   image(eventLabels, sequencer.multiTracks.get(0).getX() - 65, height + sequencerYOffset);
-  
+
   text("FPS: " + (int)frameRate,0, height);
-  
+
   // Draw help text
   if(showHelpText){
 
@@ -237,7 +239,7 @@ void mouseReleased(){
 }
 
 int getType(){
-  
+
   int type = 0;
 
   if(shiftPressed){
@@ -253,7 +255,7 @@ int getType(){
   }else{
     type = sequencer.getTypeFromMouseButton(mouseButton);
   }
-  
+
   return type;
 }
 
@@ -384,7 +386,7 @@ void keyReleased(){
     //sequencer.setBeatsPerBar(sequencer.getBeatsPerBar() - 1);
     println("Decreasing beats per bar to: " + sequencer.getBeatsPerBar());
   }
-  
+
   if(key == 'w'){
     up = false;
   }if(key == 's'){
@@ -457,20 +459,20 @@ public void drawGrid(){
   fill(0);
   stroke(0x55000000);
   textSize(16);
-  
+
   float thickLineSpacing = 0;
 
   for(int i = 0; i < 250; ++i){
   
     gridYPos = (int)(height - (i * gridSpacing) + sequencerYOffset);
-    
+
     colorTrackerNum = (i + amountScrolled);
     thickLineSpacing = 8 / sequencer.getGridResolution();
     if(colorTrackerNum % thickLineSpacing == 0){
       strokeWeight(4);
       fill(BeatSaberTrackEditor.THEME_COLOR_0);
       textSize(18);
-      text((int)(colorTrackerNum / thickLineSpacing), sequencer.multiTracks.get(4).getX() + sequencer.multiTracks.get(4).tracks.size() * sequencer.getGridWidth() + 2, gridYPos - 4); 
+      text((int)(colorTrackerNum / thickLineSpacing), sequencer.multiTracks.get(4).getX() + sequencer.multiTracks.get(4).tracks.size() * sequencer.getGridWidth() + 2, gridYPos - 4);
       fill(0);
     }else if(colorTrackerNum % 4 == 0)
       strokeWeight(2);

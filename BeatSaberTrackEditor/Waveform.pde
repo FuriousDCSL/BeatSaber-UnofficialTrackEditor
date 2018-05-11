@@ -20,7 +20,7 @@ class Waveform extends GUIElement {
   private int heightScale = 1;
   private float spectraWidthScale = 1.75;
   private int seqOffset;
-
+  private float beatOffset = 0;
   private float maxSize = 0;
 
   private int gridSize = 0;
@@ -31,16 +31,22 @@ class Waveform extends GUIElement {
 
   String soundfilePath = "data\\90BPM_Stereo_ClickTrack.wav";
 
-  Waveform(GUIElement parent, int x, int y, int gridSize, Minim minim, int yOffset){
+  Waveform(GUIElement parent, int x, int y, int gridSize, Minim minim, int yOffset, float beatOffset){
     super(parent, x, y, gridSize, gridSize);
 
     this.gridSize = gridSize;
 
     this.minim = minim;
+
+    this.beatOffset = beatOffset;
+
     border = 20;
     this.seqOffset = yOffset;
   }
 
+  public void setOffset(float offset){
+    beatOffset = offset;
+  }
   // analyzes the spectrum and puts it in spectra and spectraBitmap
 
   // this function shamelessly stolen from tutorial on web
@@ -222,12 +228,12 @@ class Waveform extends GUIElement {
   // Set the tracker position in samples
   public void setTrackerPositionSamples(int pos){
     soundbis.rewind();
-    soundbis.skip(pos);
+    soundbis.skip(pos-int(beatOffset));
   }
 
   public void setTrackerPositionPixels(int pos){
     soundbis.rewind();
-    soundbis.skip((int)pixels2SoundPosition(pos));
+    soundbis.skip((int)pixels2SoundPosition(pos)-int(beatOffset));
   }
 
   // Returns current position in the song in ms

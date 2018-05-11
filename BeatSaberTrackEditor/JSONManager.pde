@@ -9,11 +9,16 @@ class JSONManager{
   int beatsPerBar = 16;
   int notesPerBar = 1; // Change this value later
   float offset;
+
   public JSONManager(TrackSequencer seq, GLabel consoleOutLabel){
     this.seq = seq;
     this.consoleOutLabel = consoleOutLabel;
   }
 
+  //return song Offset in milliseconds
+  public float getOffset(){
+  return offset;
+  }
   // Load a track from disk
   public void loadTrack(String filename){
     if(filename == null || filename.isEmpty()){
@@ -74,11 +79,12 @@ class JSONManager{
     // Load notes
     //
 
-    float beatOffset =offset*bpmIn/60;
+    float beatOffset =offset/60000.0*bpmIn;
+    seq.setOffset(beatOffset);
 
 
 
-    println(beatOffset);
+    println("beatOffset: " + beatOffset);
     delay(1000);
 
     for(int n = 0; n < notes.size(); ++n){
@@ -92,6 +98,7 @@ class JSONManager{
       currentType = currentObject.getInt("_type");
       currentCutDirection = currentObject.getInt("_cutDirection");
 
+      println("beatOffset : "+beatOffset);
       println("currentTime : " + currentTime);
       //println("currentNote : " + currentNote); //println("currentLineIndex : " + currentLineIndex); //println("currentLineLayer : " + currentLineLayer); //println("currentType : " + currentType);  //println("currentCutDirection : " + currentCutDirection);
 
